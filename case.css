@@ -1,0 +1,264 @@
+/* Elaine Bayhon — case study pages
+   Loaded after styles.css, which supplies the fonts, the colour tokens and
+   the twelve-column guide. This sheet is only what a case study adds; the
+   homepage never loads it. */
+
+/* ==================================================================
+ * Chrome — the two fixed things, both anchored to the left margin
+ * ================================================================== */
+
+/* Sits exactly where the homepage's section heading sits — same margin, same
+   40 off the top, same 16px uppercase at --eyebrow-size. The drawn square is
+   an arrow here, because this one goes somewhere. */
+.case__back {
+  position: fixed;
+  left: var(--margin);
+  top: var(--eyebrow-top);
+  z-index: var(--z-rail);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  font-size: var(--eyebrow-size);
+  line-height: 1.3;
+  letter-spacing: calc(var(--eyebrow-size) * -0.02);
+  color: var(--ink);
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* TEMPORARY — a 28x20 stand-in until the arrow is exported. */
+.case__back-mark {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 20px;
+  background: var(--placeholder-media);
+}
+
+.case__back:hover,
+.case__back:focus-visible { color: var(--ink-strong); }
+
+/* The section index. Light pill, deliberately not the homepage's dark one:
+   that went dark to stay legible over project artwork, and this never crosses
+   any — it holds the left margin over plain ground for the whole page. Same
+   blur, same translucency, same weight-and-colour logic for the active item,
+   turned on its side. */
+.case__index {
+  position: fixed;
+  left: var(--margin);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: var(--z-nav);
+  margin: 0;
+  padding: 12px 16px;
+  list-style: none;
+  background: rgba(245, 243, 242, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  counter-reset: none;
+}
+
+.case__index li {
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: -0.12px;
+  white-space: nowrap;
+}
+
+/* Light and muted at rest, medium and inked when it is the section you are
+   in — the same two states the homepage nav crosses between. */
+.case__index li,
+.case__index a {
+  font-weight: 300;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 200ms linear;
+}
+
+.case__index a:hover { color: var(--ink); }
+
+.case__index .is-current,
+.case__index .is-current a {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* ==================================================================
+ * The banner
+ * ================================================================== */
+
+/* The details block is the anchor: its middle sits on the middle of the
+   viewport at any height, and everything below hangs off its foot. That is
+   one measured number — how tall the block sets, which depends on how the
+   description wraps — and the rest is arithmetic. --case-details-h is written
+   by case.js; the 96 here is what it comes to at 1440, so the page is right
+   before the script runs and stays right if it never does. */
+/* On :root, not on .case. case.js writes the measured height to the document
+   element as an inline style; a declaration on the body would have sat closer
+   to the banner and quietly won, which is exactly what it did at first — the
+   block kept the 96 fallback and sat 9px high. */
+:root {
+  --case-details-h: 78px;
+  --case-meta-gap: 60px;
+  --case-cover-gap: 24px;
+}
+
+.case__banner {
+  padding-top: calc(50vh - (var(--case-details-h) / 2));
+  padding-bottom: 120px;
+}
+
+/* Column five of the twelve, which is where the homepage puts a project's
+   writeup, out to the eighth — the same 923 the project cards run to. */
+.case__details,
+.case__meta,
+.case__cover {
+  margin-left: calc(var(--margin) + (var(--pitch) * 4));
+  margin-right: var(--margin);
+  width: calc((var(--column) * 8) + (var(--gutter) * 7));
+  max-width: 923px;
+}
+
+.case__details { margin-bottom: 0; }
+
+.case__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+}
+
+.case__client {
+  margin: 0;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: -0.24px;
+  color: var(--muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.case__title {
+  margin: 0;
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1.3;
+  letter-spacing: -0.52px;
+  color: var(--ink-strong);
+}
+
+/* Four columns of the eight, so it wraps where the frame wraps it.
+
+   Stated against this block rather than the page: --column resolves its 100%
+   against the containing block, and the containing block here is the 923 the
+   banner runs to, not the viewport — reusing it directly gave 281. The block
+   is itself eight page-columns and seven gutters, so dividing it back out
+   recovers the same column to the hundredth: 101.375 against the page's
+   101.33 at 1440. */
+.case__details { --case-column: calc((100% - (var(--gutter) * 7)) / 8); }
+
+.case__summary {
+  margin: 8px 0 0;
+  width: calc((var(--case-column) * 4) + (var(--gutter) * 3));
+  max-width: 100%;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.3;
+  letter-spacing: -0.28px;
+  color: var(--ink);
+}
+
+.case__meta {
+  margin-top: var(--case-meta-gap);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.case__meta div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.case__meta dt,
+.case__meta dd {
+  margin: 0;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: -0.24px;
+}
+
+.case__meta dt {
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.case__meta dd { color: var(--ink); }
+
+/* The separators are the carousel's own character, the one the clock uses
+   between SINGAPORE and the time. 2px either side, as drawn. */
+.case__did {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.case__cover {
+  margin-top: var(--case-cover-gap);
+  aspect-ratio: 16 / 9;
+  background: var(--placeholder-media);
+  overflow: hidden;
+}
+
+.case__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ==================================================================
+ * Tablet and below — not yet designed. This is only enough to keep the
+ * page from breaking: the index leaves the margin it has no room for and
+ * sits under the back link, and the content takes the full measure.
+ * ================================================================== */
+@media (max-width: 810px) {
+  .case__index {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: calc(var(--eyebrow-top) + 32px) var(--margin) 0;
+    padding: 10px 12px;
+  }
+
+  .case__details,
+  .case__meta,
+  .case__cover {
+    margin-left: var(--margin);
+    width: auto;
+    max-width: none;
+  }
+
+  .case__summary { width: auto; }
+
+  .case__banner {
+    padding-top: 40px;
+    padding-bottom: 80px;
+  }
+
+  .case__title { font-size: 20px; letter-spacing: -0.4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case__index li,
+  .case__index a { transition: none; }
+}
