@@ -855,6 +855,60 @@ a.nav__item { text-decoration: none; }
 /* A tag breaks between tags, never inside one. */
 .card__tags span { white-space: nowrap; }
 
+/* The whole card is one link, so there is no hunting for the title or the
+   image, and a keyboard lands on it once rather than three times. Block,
+   because an inline box cannot carry the card's layout; the colours are
+   inherited so nothing about the card's look changes at rest.
+
+   Only a card with a case study behind it gets this. The others stay flat
+   and uninviting, which is the truth about them. */
+.card__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The cover eases up inside its own frame, which is already overflow:hidden,
+   so the crop does the work and nothing moves on the page. Slow, and on the
+   same curve the rest of the page settles with — a card is a destination,
+   not a button. */
+.card__link .card__media img {
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card__link:hover .card__media img,
+.card__link:focus-visible .card__media img {
+  transform: scale(1.03);
+}
+
+/* The title takes a rule that draws in from the left. The page has no
+   borders, shadows or lifts anywhere, so a card that rose or glowed would be
+   the only one of its kind; a rule under a word is already the page's
+   vocabulary. fit-content so it is the width of the words rather than the
+   column. */
+.card__link .card__title {
+  position: relative;
+  width: fit-content;
+}
+
+.card__link .card__title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background: var(--ink-strong);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card__link:hover .card__title::after,
+.card__link:focus-visible .card__title::after {
+  transform: scaleX(1);
+}
+
 /* A project whose cover is not ready yet. Out of the flow entirely, so the
    section is three cards tall and the changeovers measure themselves against
    the real last card. Drop the class to bring it back. */
@@ -1701,6 +1755,13 @@ html { scroll-behavior: smooth; }
   .extras__intro { transform: none; }
 
   .extras__track { animation: none; }
+
+  /* The cover holds still and the rule simply appears. */
+  .card__link .card__media img,
+  .card__link .card__title::after { transition: none; }
+
+  .card__link:hover .card__media img,
+  .card__link:focus-visible .card__media img { transform: none; }
 
   html { scroll-behavior: auto; }
 }
