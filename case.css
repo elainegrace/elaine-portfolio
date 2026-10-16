@@ -440,10 +440,15 @@ a.case__link:focus-visible {
 .case__subhead + *,
 .case__label + * { margin-top: 8px; }
 
-/* An aside in the section's own voice rather than its reporting voice —
-   the things that were considered and dropped. Italic is the whole block's
-   property, not emphasis on any one word, so it is a class and not an em. */
-.case__prose--aside p { font-style: italic; }
+/* An aside in the section's own voice rather than its reporting voice — the
+   things considered and dropped, the questions that were never answered.
+   Italic is the whole passage's property, not emphasis on any one word, so
+   it is a class and not an em. It goes on a whole prose block or on one list
+   inside one, which is why it stands on its own rather than hanging off
+   .case__prose. */
+.case__aside,
+.case__aside p,
+.case__aside li { font-style: italic; }
 
 /* ==================================================================
  * Tablet and below — not yet designed. This is only enough to keep the
