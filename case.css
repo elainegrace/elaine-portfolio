@@ -391,8 +391,9 @@ a.case__link:focus-visible {
 .case__figure { --case-figure-column: calc((100% - (var(--gutter) * 5)) / 6); }
 
 .case__figure figcaption {
-  margin-top: 12px;
+  margin-top: 4px;
   max-width: calc((var(--case-figure-column) * 4) + (var(--gutter) * 3));
+  font-style: italic;
   font-weight: 300;
   font-size: 12px;
   line-height: 1.3;
