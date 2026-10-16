@@ -353,6 +353,11 @@ a.case__link:focus-visible {
   text-decoration-color: var(--ink-strong);
 }
 
+/* A section that opens straight into prose rather than a standfirst: its
+   first paragraph is doing the standfirst's job, so the title binds to it
+   with the same 8. A figure is not a line of text and keeps its own 40. */
+.case__head + .case__prose { margin-top: 8px; }
+
 /* A standfirst and the prose under it are the same type, so without a break
    between them the opening would read as the first body paragraph. This is
    the gap a figure takes, which keeps the section on one rhythm. A section
