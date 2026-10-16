@@ -324,6 +324,25 @@
   color: var(--ink-strong);
 }
 
+/* Links in prose. The source marks them before there is anywhere to point
+   them, so the formatting sits on a class that a span can carry: nothing on
+   the page is a link to nowhere, and attaching one later is adding the href.
+   Only the anchor takes a hover, so the placeholder never pretends. */
+.case__link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--muted);
+  text-underline-offset: 3px;
+  transition: color 200ms linear, text-decoration-color 200ms linear;
+}
+
+a.case__link:hover,
+a.case__link:focus-visible {
+  color: var(--ink-strong);
+  text-decoration-color: var(--ink-strong);
+}
+
 /* A standfirst and the prose under it are the same type, so without a break
    between them the opening would read as the first body paragraph. This is
    the gap a figure takes, which keeps the section on one rhythm. A section
@@ -389,5 +408,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .case__index li,
-  .case__index a { transition: none; }
+  .case__index a,
+  .case__link { transition: none; }
 }
