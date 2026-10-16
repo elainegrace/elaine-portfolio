@@ -440,7 +440,10 @@ a.case__link:focus-visible {
   color: var(--ink-strong);
 }
 
-.case__section > .case__subhead { margin-top: var(--case-block-gap); }
+/* A part name takes the block break; the same class inside a prose block is
+   naming one item in a list of them, and keeps the paragraph gap. */
+.case__section > .case__subhead,
+.case__section > .case__label { margin-top: var(--case-block-gap); }
 
 .case__label {
   margin: var(--case-para-gap) 0 0;
