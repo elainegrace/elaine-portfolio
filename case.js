@@ -67,6 +67,14 @@
     for (var i = 0; i < tracked.length; i++) {
       if (tracked[i].section.offsetTop <= middle) current = tracked[i];
     }
+
+    /* The foot of the page is the one place the middle cannot decide. A last
+       section shorter than half a viewport never reaches the middle, because
+       the scroll runs out before it gets there — so Close stayed unreachable
+       even with its own anchor clicked. Being at the bottom is the answer:
+       whatever else is on screen, the last section is what you are at. */
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    if (max > 0 && window.scrollY >= max - 2) current = tracked[tracked.length - 1];
     for (var j = 0; j < items.length; j++) {
       items[j].classList.toggle("is-current", items[j] === current.li);
     }
