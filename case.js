@@ -1,23 +1,12 @@
 /* Elaine Bayhon — case study pages
-   Two jobs: keep the details block centred whatever height it sets to, and
-   keep the section index pointing at the section you are actually in. Both
-   return early if their elements are absent. */
+   One job: keep the section index pointing at the section you are actually
+   in. It returns early if the index is absent.
+
+   The banner used to be measured here too, back when it was centred on the
+   fold and everything hung off the details block. The cover anchors it now,
+   top-aligned with the back link, so the stack needs no arithmetic. */
 (function () {
   "use strict";
-
-  /* ---- the anchor ------------------------------------------------
-     Everything in the banner hangs off the details block: its middle sits on
-     the middle of the viewport, the credits 60 below its foot, the cover 24
-     below theirs. Only its height has to be measured — how tall it sets
-     depends on where the description wraps, which depends on the width. */
-  var details = document.querySelector(".case__details");
-
-  function measure() {
-    if (!details) return;
-    document.documentElement.style.setProperty(
-      "--case-details-h", details.offsetHeight + "px"
-    );
-  }
 
   /* ---- the index -------------------------------------------------
      The item for whichever section currently owns the middle of the screen is
@@ -57,11 +46,10 @@
     }
   }
 
-  function refresh() { measure(); mark(); }
-
-  refresh();
+  mark();
   window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", refresh);
-  /* Switzer and Schoolbell change how the description wraps when they land. */
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
+  window.addEventListener("resize", mark);
+  /* The fonts change how the writeup wraps, which moves every section below
+     it, so the offsets are worth reading again once they land. */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(mark);
 })();
