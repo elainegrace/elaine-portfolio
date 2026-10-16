@@ -309,6 +309,13 @@
   letter-spacing: -0.48px;
 }
 
+/* A quote can open a section, with no standfirst before it. It takes the
+   plain block break there rather than its usual 88: that 88 is the air it
+   needs to stand clear of a paragraph, and a title is not a paragraph —
+   under one it would leave the title stranded. Same 40 a figure takes when
+   it opens a section. */
+.case__head + .case__quote { margin-top: var(--case-block-gap); }
+
 /* Paragraphs and lists, an empty line apart. A list belongs to the paragraph
    that introduces it, so it sits straight under it with no gap. */
 .case__prose { margin: 0; }
