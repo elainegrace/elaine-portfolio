@@ -88,38 +88,73 @@
 }
 
 /* ==================================================================
- * The banner
+ * The measure, the typescale, the spacing
  * ================================================================== */
 
-/* The cover is the anchor now: its top sits level with the back link, the
-   same 40 off the top of the page, and the writeup and the credits hang off
-   its foot 60 apart. Nothing has to be measured for this — the stack is three
-   blocks in a column — so the banner is right before any script runs and
-   right if none ever does. */
 :root {
-  --case-cover-gap: 60px;   /* cover foot to the writeup */
-  --case-meta-gap: 60px;    /* writeup foot to the credits */
-  --case-para-gap: 8px;     /* between the writeup's own paragraphs */
-}
+  /* Body copy on a case study runs at 150% rather than the 130% the homepage
+     sets to. The homepage's text comes in short bursts — a card title, a
+     line of credits — where tight leading reads as composed; a case study is
+     paragraphs you actually read through, and 130 is a squint. The size,
+     colour and tracking are unchanged, so it stays the same voice. */
+  --case-body-size: 14px;
+  --case-body-lead: 1.5;
+  --case-body-track: -0.28px;
 
-.case__banner {
-  padding-top: var(--eyebrow-top);
-  padding-bottom: 120px;
+  /* One line of that leading. Figma separates paragraphs with an empty line
+     rather than a nudge, so this is the gap, not a round number near it. */
+  --case-para-gap: calc(var(--case-body-size) * var(--case-body-lead));
+
+  --case-cover-gap: 60px;      /* banner: cover foot to the writeup */
+  --case-meta-gap: 60px;       /* banner: writeup foot to the credits */
+  --case-section-lead: 90px;   /* between one section and the next */
+  --case-quote-lead: 88px;     /* the air a pull quote gets above it */
+  --case-quote-trail: 28px;    /* and the much smaller gap below */
+  --case-figure-gap: 40px;     /* around a figure */
+  --case-head-label: 53px;     /* so every title starts on the same x */
 }
 
 /* Column five of the twelve, which is where the homepage puts a project's
-   writeup, out to the eighth — the same 923 the project cards run to. */
-.case__details,
-.case__meta,
-.case__cover {
+   writeup, out to the eighth — the same 923 the project cards run to. Every
+   block on the page is this wide or narrower, and the narrower ones measure
+   themselves in --case-column.
+
+   --case-column has to be restated here rather than reusing --column, because
+   --column resolves its 100% against the containing block, and inside this
+   block that is the 923, not the page — reusing it gave 281. The block is
+   itself eight page-columns and seven gutters, so dividing it back out
+   recovers the same column to the hundredth: 101.375 against the page's
+   101.33 at 1440. */
+.case__banner,
+.case__section {
   margin-left: calc(var(--margin) + (var(--pitch) * 4));
   margin-right: var(--margin);
   width: calc((var(--column) * 8) + (var(--gutter) * 7));
   max-width: 923px;
+  --case-column: calc((100% - (var(--gutter) * 7)) / 8);
 }
 
-.case__details { margin-top: var(--case-cover-gap); }
+/* The two measures text sets to: four columns for anything you read in
+   paragraphs, five for a pull quote, which is larger and wants the extra. */
+.case__summary,
+.case__standfirst,
+.case__prose {
+  width: calc((var(--case-column) * 4) + (var(--gutter) * 3));
+  max-width: 100%;
+}
 
+.case__quote {
+  width: calc((var(--case-column) * 5) + (var(--gutter) * 4));
+  max-width: 100%;
+}
+
+/* ==================================================================
+ * Heads — the banner's and a section's are the same object
+ * ================================================================== */
+
+/* A label, then the title: SUNOLLO / Website Redesign in the banner, 01 /
+   The problem in a section. The label holds a fixed width so that every
+   title on the page starts on the same x however short its number is. */
 .case__head {
   display: flex;
   align-items: center;
@@ -127,8 +162,10 @@
   margin: 0;
 }
 
-.case__client {
+.case__client,
+.case__num {
   margin: 0;
+  min-width: var(--case-head-label);
   font-weight: 400;
   font-size: 12px;
   line-height: 1.3;
@@ -147,34 +184,37 @@
   color: var(--ink-strong);
 }
 
-/* Four columns of the eight, so it wraps where the frame wraps it.
+/* ==================================================================
+ * The banner
+ * ================================================================== */
 
-   Stated against this block rather than the page: --column resolves its 100%
-   against the containing block, and the containing block here is the 923 the
-   banner runs to, not the viewport — reusing it directly gave 281. The block
-   is itself eight page-columns and seven gutters, so dividing it back out
-   recovers the same column to the hundredth: 101.375 against the page's
-   101.33 at 1440. */
-.case__details { --case-column: calc((100% - (var(--gutter) * 7)) / 8); }
+/* The cover is the anchor: its top sits level with the back link, the same 40
+   off the top of the page, and the writeup and the credits hang off its foot
+   60 apart. Nothing has to be measured for this — the stack is three blocks
+   in a column — so the banner is right before any script runs and right if
+   none ever does. */
+.case__banner { padding-top: var(--eyebrow-top); }
 
-/* Two paragraphs now rather than the frame's one line, so this is a stack
-   rather than a single run of text. Same 8 between them as between the head
-   and the writeup, which keeps the block on one rhythm. */
+.case__details { margin-top: var(--case-cover-gap); }
+
 .case__summary {
   margin: 8px 0 0;
-  width: calc((var(--case-column) * 4) + (var(--gutter) * 3));
-  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--case-para-gap);
 }
 
-.case__summary p {
-  margin: 0;
+.case__summary p { margin: 0; }
+
+/* Everything you read in paragraphs, wherever it sits. */
+.case__summary p,
+.case__standfirst,
+.case__prose p,
+.case__prose li {
   font-weight: 300;
-  font-size: 14px;
-  line-height: 1.3;
-  letter-spacing: -0.28px;
+  font-size: var(--case-body-size);
+  line-height: var(--case-body-lead);
+  letter-spacing: var(--case-body-track);
   color: var(--ink);
 }
 
@@ -230,6 +270,74 @@
 }
 
 /* ==================================================================
+ * Sections — the groundwork the rest of the page is built from
+ * ================================================================== */
+
+/* Every section after the banner is the same five parts in whatever order it
+   needs them: a head, a standfirst, a pull quote, prose, and figures. None is
+   required, and a section that repeats one just repeats it — the spacing is
+   stated on each part rather than between siblings, so the order is free. */
+.case__section { margin-top: var(--case-section-lead); }
+
+.case__section:last-child { margin-bottom: 120px; }
+
+.case__standfirst { margin: 8px 0 0; }
+
+/* The quote is the one thing on the page set in Newsreader rather than
+   Switzer, and the only italic — a question asked in a different voice from
+   the reporting around it. It takes a lot of air above and much less below,
+   which ties it to the paragraphs that answer it rather than letting it
+   float between two sections. */
+.case__quote {
+  margin: var(--case-quote-lead) 0 var(--case-quote-trail);
+  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 32px;
+  line-height: 1.3;
+  letter-spacing: -0.64px;
+  color: var(--ink-strong);
+}
+
+/* Paragraphs and lists, an empty line apart. A list belongs to the paragraph
+   that introduces it, so it sits straight under it with no gap. */
+.case__prose { margin: 0; }
+
+.case__prose > * { margin: var(--case-para-gap) 0 0; }
+
+.case__prose > *:first-child { margin-top: 0; }
+
+.case__prose ol,
+.case__prose ul { padding-left: 21px; }
+
+.case__prose p + ol,
+.case__prose p + ul { margin-top: 0; }
+
+.case__prose li { margin: 0; }
+
+.case__prose li::marker { color: var(--ink); }
+
+/* Six columns of the eight, which is where the frame draws them. The
+   placeholder keeps the slot at its drawn size until the export lands. */
+.case__figure {
+  margin: var(--case-figure-gap) 0;
+  width: calc((var(--case-column) * 6) + (var(--gutter) * 5));
+  max-width: 100%;
+}
+
+.case__figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* TEMPORARY — 688x410 stand-ins until the real images land. */
+.case__figure--placeholder {
+  aspect-ratio: 688 / 410;
+  background: var(--placeholder-media);
+}
+
+/* ==================================================================
  * Tablet and below — not yet designed. This is only enough to keep the
  * page from breaking: the index leaves the margin it has no room for and
  * sits under the back link, and the content takes the full measure.
@@ -245,19 +353,24 @@
     padding: 10px 12px;
   }
 
-  .case__details,
-  .case__meta,
-  .case__cover {
+  .case__banner,
+  .case__section {
     margin-left: var(--margin);
     width: auto;
     max-width: none;
   }
 
-  .case__summary { width: auto; }
+  .case__summary,
+  .case__standfirst,
+  .case__prose,
+  .case__quote,
+  .case__figure { width: auto; }
 
-  .case__banner { padding-bottom: 80px; }
+  .case__section:last-child { margin-bottom: 80px; }
 
   .case__title { font-size: 20px; letter-spacing: -0.4px; }
+
+  .case__quote { font-size: 24px; letter-spacing: -0.48px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
