@@ -380,9 +380,19 @@ a.case__link:focus-visible {
 }
 
 /* A caption sits under its image at the page's small size, in the same grey
-   the credits' labels use — it names the picture, it is not read as prose. */
+   the credits' labels use — it names the picture, it is not read as prose.
+   It still takes the text measure rather than the picture's: a line of 12px
+   running the figure's full 688 is 110 characters, which nobody reads.
+
+   The measure has to be divided back out of the figure for the same reason
+   --case-column is divided back out of the section — a percentage resolves
+   against the containing block, and in here that is the figure's six
+   columns, not the section's eight. */
+.case__figure { --case-figure-column: calc((100% - (var(--gutter) * 5)) / 6); }
+
 .case__figure figcaption {
   margin-top: 12px;
+  max-width: calc((var(--case-figure-column) * 4) + (var(--gutter) * 3));
   font-weight: 300;
   font-size: 12px;
   line-height: 1.3;
