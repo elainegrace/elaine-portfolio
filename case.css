@@ -112,6 +112,7 @@
   --case-quote-trail: 28px;    /* and the much smaller gap below */
   --case-block-gap: 40px;      /* a plain break between parts of a section */
   --case-head-label: 53px;     /* so every title starts on the same x */
+  --case-rule: #e4e2e1;        /* the one hairline on the page, under a fold */
 }
 
 /* Column five of the twelve, which is where the homepage puts a project's
@@ -138,7 +139,8 @@
    paragraphs, five for a pull quote, which is larger and wants the extra. */
 .case__summary,
 .case__standfirst,
-.case__prose {
+.case__prose,
+.case__fold {
   width: calc((var(--case-column) * 4) + (var(--gutter) * 3));
   max-width: 100%;
 }
@@ -425,13 +427,15 @@ a.case__link:focus-visible {
    one checkpoint in a run of them, and sets at the body's own size: the step
    between them is weight and colour, not another size on the scale. */
 .case__subhead {
-  margin: var(--case-block-gap) 0 0;
+  margin: 0;
   font-weight: 500;
   font-size: 18px;
   line-height: 1.3;
   letter-spacing: -0.36px;
   color: var(--ink-strong);
 }
+
+.case__section > .case__subhead { margin-top: var(--case-block-gap); }
 
 .case__label {
   margin: var(--case-para-gap) 0 0;
@@ -447,6 +451,64 @@ a.case__link:focus-visible {
    after the figure and prose rules so it wins over both. */
 .case__subhead + *,
 .case__label + * { margin-top: 8px; }
+
+/* ------------------------------------------------------------------
+ * Folds — a subsection you can open
+ * ------------------------------------------------------------------ */
+
+/* Two of these close the back half of Three checkpoints: the detail behind
+   the argument rather than the argument itself, worth having and not worth
+   the scroll. A <details> rather than script, so it opens with no
+   JavaScript, answers the keyboard, and is open when the page prints. The
+   heading stays inside the summary, which the content model allows, so the
+   page still reads as an outline. */
+.case__fold { margin-top: var(--case-block-gap); }
+
+.case__fold > summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--case-rule);
+  cursor: pointer;
+  list-style: none;
+}
+
+.case__fold > summary::-webkit-details-marker { display: none; }
+
+/* The sign is the only moving part — plus to open, minus to close — in the
+   grey the credits' labels use, so it never competes with the title it
+   sits beside. */
+.case__fold > summary::after {
+  content: "+";
+  flex: none;
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--muted);
+  transition: color 200ms linear;
+}
+
+.case__fold[open] > summary::after { content: "\2212"; }
+
+.case__fold > summary:hover::after,
+.case__fold > summary:focus-visible::after { color: var(--ink-strong); }
+
+.case__fold > summary:focus-visible {
+  outline: 1px solid var(--ink-strong);
+  outline-offset: 4px;
+}
+
+/* The fold is already the text measure, so its prose fills it. Without this
+   the prose measures itself again from inside — --case-column divides a
+   percentage of its containing block, which in here is the fold's 453 and
+   not the section's 923, and four columns of that is 218. The same trap as
+   --column inside the section and --case-column inside a figure. */
+.case__fold > .case__prose {
+  margin-top: var(--case-para-gap);
+  width: auto;
+}
 
 /* An aside in the section's own voice rather than its reporting voice — the
    things considered and dropped, the questions that were never answered.
@@ -485,7 +547,8 @@ a.case__link:focus-visible {
   .case__standfirst,
   .case__prose,
   .case__quote,
-  .case__figure { width: auto; }
+  .case__figure,
+  .case__fold { width: auto; }
 
   .case__section:last-child { margin-bottom: 80px; }
 
@@ -499,5 +562,6 @@ a.case__link:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .case__index li,
   .case__index a,
-  .case__link { transition: none; }
+  .case__link,
+  .case__fold > summary::after { transition: none; }
 }
