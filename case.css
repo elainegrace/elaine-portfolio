@@ -364,11 +364,61 @@ a.case__link:focus-visible {
   display: block;
 }
 
-/* TEMPORARY — 688x410 stand-ins until the real images land. */
-.case__figure--placeholder {
+/* A caption sits under its image at the page's small size, in the same grey
+   the credits' labels use — it names the picture, it is not read as prose. */
+.case__figure figcaption {
+  margin-top: 12px;
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: -0.24px;
+  color: var(--muted);
+}
+
+/* TEMPORARY — 688x410 stand-ins until the real images land. The box is a
+   child of the figure rather than the figure itself, so that a figure with
+   a caption still sizes its picture and not the pair. */
+.case__placeholder {
   aspect-ratio: 688 / 410;
   background: var(--placeholder-media);
 }
+
+/* ------------------------------------------------------------------
+ * Two levels under a section title
+ * ------------------------------------------------------------------ */
+
+/* A subhead opens a part of a section — "What kept moving" — and takes the
+   break a figure takes above it. A label names one item inside that part, or
+   one checkpoint in a run of them, and sets at the body's own size: the step
+   between them is weight and colour, not another size on the scale. */
+.case__subhead {
+  margin: var(--case-block-gap) 0 0;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: -0.36px;
+  color: var(--ink-strong);
+}
+
+.case__label {
+  margin: var(--case-para-gap) 0 0;
+  font-weight: 500;
+  font-size: var(--case-body-size);
+  line-height: var(--case-body-lead);
+  letter-spacing: var(--case-body-track);
+  color: var(--ink-strong);
+}
+
+/* Either one binds to what it introduces with the same 8 that ties a section
+   title to its standfirst — whether that is a paragraph or a picture. Stated
+   after the figure and prose rules so it wins over both. */
+.case__subhead + *,
+.case__label + * { margin-top: 8px; }
+
+/* An aside in the section's own voice rather than its reporting voice —
+   the things that were considered and dropped. Italic is the whole block's
+   property, not emphasis on any one word, so it is a class and not an em. */
+.case__prose--aside p { font-style: italic; }
 
 /* ==================================================================
  * Tablet and below — not yet designed. This is only enough to keep the
