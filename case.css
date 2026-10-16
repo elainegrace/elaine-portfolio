@@ -304,9 +304,14 @@
 /* A second, quieter pull quote. These are the section thinking aloud rather
    than the one question it exists to answer, so they set at 24 against the
    how-might-we's 32 and take the plain block break above instead of its 88 —
-   several can sit in one section without the page turning to air. */
+   several can sit in one section without the page turning to air.
+
+   Twice the block break above and twice the trail below: at the plain 40 and
+   28 a quote between two paragraphs read as another paragraph. The
+   how-might-we keeps its own 88 and 28 — it answers to a frame, and the 28
+   there binds it to the line that answers it. */
 .case__quote--sm {
-  margin: var(--case-block-gap) 0 var(--case-quote-trail);
+  margin: calc(var(--case-block-gap) * 2) 0 calc(var(--case-quote-trail) * 2);
   font-size: 24px;
   letter-spacing: -0.48px;
 }
@@ -409,10 +414,6 @@ a.case__link:focus-visible {
   letter-spacing: -0.24px;
   color: var(--muted);
 }
-
-/* A term picked out inside a caption steps up a weight and stays in the
-   caption's grey — black would make it louder than the picture. */
-.case__figure figcaption strong { font-weight: 500; }
 
 /* TEMPORARY — 688x410 stand-ins until the real images land. The box is a
    child of the figure rather than the figure itself, so that a figure with
