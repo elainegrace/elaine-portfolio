@@ -5,6 +5,39 @@
    The banner used to be measured here too, back when it was centred on the
    fold and everything hung off the details block. The cover anchors it now,
    top-aligned with the back link, so the stack needs no arithmetic. */
+/* ---- Landing where you left off, not where the last page left off ----
+   Going between these two pages lands you at the foot of the one you
+   arrive on. The cause is not this page: the homepage is 9247 tall and the
+   case study 2472, and a shell that keeps the scroll offset across the
+   navigation — a preview frame whose own document does the scrolling,
+   rather than the page's — hands the offset it had to a much shorter
+   document, where it clamps to the maximum. The maximum is the bottom. It
+   happens every time rather than now and then because you have to scroll
+   past 2200 to reach the project card at all.
+
+   Putting it back at the top costs nothing and is right whenever this
+   page's own window is the one that scrolls. A back or forward step is
+   left alone, so returning to a page still returns you to your place in
+   it, and so is an arrival on an anchor. The same block is at the top of
+   app.js, which has the same problem in the other direction. */
+(function () {
+  if (location.hash) return;
+
+  var entries = window.performance && performance.getEntriesByType
+    ? performance.getEntriesByType("navigation") : null;
+  if (entries && entries[0] && entries[0].type === "back_forward") return;
+
+  function top() {
+    /* html sets scroll-behavior: smooth, which would otherwise animate the
+       correction into view instead of simply not being wrong. */
+    try { window.scrollTo({ top: 0, left: 0, behavior: "instant" }); }
+    catch (e) { window.scrollTo(0, 0); }
+  }
+
+  top();
+  window.addEventListener("load", top);
+})();
+
 (function () {
   "use strict";
 
