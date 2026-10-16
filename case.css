@@ -299,6 +299,16 @@
   color: var(--ink-strong);
 }
 
+/* A second, quieter pull quote. These are the section thinking aloud rather
+   than the one question it exists to answer, so they set at 24 against the
+   how-might-we's 32 and take the plain block break above instead of its 88 —
+   several can sit in one section without the page turning to air. */
+.case__quote--sm {
+  margin: var(--case-block-gap) 0 var(--case-quote-trail);
+  font-size: 24px;
+  letter-spacing: -0.48px;
+}
+
 /* Paragraphs and lists, an empty line apart. A list belongs to the paragraph
    that introduces it, so it sits straight under it with no gap. */
 .case__prose { margin: 0; }
@@ -454,6 +464,8 @@ a.case__link:focus-visible {
   .case__title { font-size: 20px; letter-spacing: -0.4px; }
 
   .case__quote { font-size: 24px; letter-spacing: -0.48px; }
+
+  .case__quote--sm { font-size: 20px; letter-spacing: -0.4px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
