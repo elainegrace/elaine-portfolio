@@ -110,7 +110,7 @@
   --case-section-lead: 90px;   /* between one section and the next */
   --case-quote-lead: 88px;     /* the air a pull quote gets above it */
   --case-quote-trail: 28px;    /* and the much smaller gap below */
-  --case-figure-gap: 40px;     /* around a figure */
+  --case-block-gap: 40px;      /* a plain break between parts of a section */
   --case-head-label: 53px;     /* so every title starts on the same x */
 }
 
@@ -317,10 +317,24 @@
 
 .case__prose li::marker { color: var(--ink); }
 
+/* The page's one step up from Light is the 500 its titles set in, not the
+   700 a browser reaches for — against Switzer Light that reads as a shout. */
+.case__prose strong {
+  font-weight: 500;
+  color: var(--ink-strong);
+}
+
+/* A standfirst and the prose under it are the same type, so without a break
+   between them the opening would read as the first body paragraph. This is
+   the gap a figure takes, which keeps the section on one rhythm. A section
+   whose standfirst is followed by a pull quote takes the quote's lead
+   instead, and that rule sits later. */
+.case__standfirst + .case__prose { margin-top: var(--case-block-gap); }
+
 /* Six columns of the eight, which is where the frame draws them. The
    placeholder keeps the slot at its drawn size until the export lands. */
 .case__figure {
-  margin: var(--case-figure-gap) 0;
+  margin: var(--case-block-gap) 0;
   width: calc((var(--case-column) * 6) + (var(--gutter) * 5));
   max-width: 100%;
 }
