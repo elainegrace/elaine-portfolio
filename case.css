@@ -417,6 +417,27 @@ a.case__link:focus-visible {
    columns, not the section's eight. */
 .case__figure { --case-figure-column: calc((100% - (var(--gutter) * 5)) / 6); }
 
+/* Figures are numbered by section — Figure 2.1, 2.2, 3.1 — the same numbering
+   Elaine's own exports carry. The heads run 02-11 and the overview is 01, so
+   the counter opens at 1 and the first .case__section takes it to 2. The
+   figure counter resets at every section.
+
+   Counters rather than numbers typed into the markup: most of the figures are
+   still stand-ins, and an image landing between two others would otherwise
+   mean renumbering every caption after it by hand. */
+main { counter-reset: case-section 1; }
+
+.case__section {
+  counter-increment: case-section;
+  counter-reset: case-figure;
+}
+
+.case__figure { counter-increment: case-figure; }
+
+.case__figure figcaption::before {
+  content: "Figure " counter(case-section) "." counter(case-figure) ". ";
+}
+
 .case__figure figcaption {
   margin-top: 4px;
   max-width: calc((var(--case-figure-column) * 4) + (var(--gutter) * 3));
