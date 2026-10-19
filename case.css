@@ -113,6 +113,7 @@
   --case-block-gap: 40px;      /* a plain break between parts of a section */
   --case-head-label: 53px;     /* so every title starts on the same x */
   --case-rule: #e4e2e1;        /* the one hairline on the page, under a fold */
+  --case-figure-ground: #f5f3ef;  /* the ground the diagrams are drawn on */
 }
 
 /* Column five of the twelve, which is where the homepage puts a project's
@@ -387,9 +388,21 @@ a.case__link:focus-visible {
   max-width: 100%;
 }
 
+/* Every picture on the page is the same size: the 688x410 the stand-ins
+   reserve. The diagrams come at different ratios, so each is contained
+   rather than cropped — fitted inside the box, never cut — and the leftover
+   sits on the ground they are all drawn on. That ground is #f5f3ef in every
+   export so far, so the fit is invisible and the figures read as one block
+   down the page. An export on a different ground would show its edges. */
 .case__figure img {
   width: 100%;
+  /* height:auto is load-bearing: the img's height attribute is a
+     presentational hint, and without this it wins over aspect-ratio and the
+     picture draws at its full pixel height. */
   height: auto;
+  aspect-ratio: 688 / 410;
+  object-fit: contain;
+  background: var(--case-figure-ground);
   display: block;
 }
 
