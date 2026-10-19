@@ -449,6 +449,154 @@ main { counter-reset: case-section 1; }
   color: var(--muted);
 }
 
+/* ------------------------------------------------------------------
+ * Figure 2.2 — the channel positioning plot
+ *
+ * Drawn in the page rather than exported. It stays sharp at any figure width,
+ * the labels are real text, and every value worth arguing about is a token at
+ * the top of this block rather than a number buried in a rule. It takes the
+ * same box and the same ground as every other figure, so it sits in the run
+ * without announcing that it is a different kind of object.
+ * ------------------------------------------------------------------ */
+.case__plot {
+  /* The tweak surface. Legibility arguments get settled here. */
+  --plot-axis-size: 10px;
+  --plot-axis-ink: var(--muted);
+  --plot-axis-track: 0.08em;
+  --plot-name-size: 16px;
+  --plot-name-ink: var(--ink-strong);
+  --plot-note-size: 12px;
+  --plot-note-ink: var(--ink);
+  --plot-lead-size: 20px;          /* the one channel the section is about */
+  --plot-rule-ink: #cfcbc4;
+  --plot-mark: 5px;
+  --plot-gap: 9px;                 /* mark to the name beside it */
+  --plot-inset: 7%;                /* how far the axes stop short of the box */
+
+  position: relative;
+  aspect-ratio: 688 / 410;
+  background: var(--case-figure-ground);
+}
+
+/* The two axes, each with a head at its far end. Borders rather than an SVG:
+   a triangle is three values, and this keeps the whole figure in CSS. */
+.case__plot-rule { position: absolute; background: var(--plot-rule-ink); }
+
+.case__plot-rule--y {
+  left: 50%;
+  top: var(--plot-inset);
+  bottom: var(--plot-inset);
+  width: 1px;
+}
+
+.case__plot-rule--x {
+  top: 50%;
+  left: var(--plot-inset);
+  right: var(--plot-inset);
+  height: 1px;
+}
+
+.case__plot-rule::after { content: ""; position: absolute; width: 0; height: 0; }
+
+.case__plot-rule--y::after {
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -100%);
+  border-bottom: 5px solid var(--plot-rule-ink);
+  border-left: 3.5px solid transparent;
+  border-right: 3.5px solid transparent;
+}
+
+.case__plot-rule--x::after {
+  top: 50%;
+  right: 0;
+  transform: translate(100%, -50%);
+  border-left: 5px solid var(--plot-rule-ink);
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+}
+
+/* The four ends of the two axes. Uppercase and tracked so they read as the
+   measure rather than as another label in the field. */
+.case__plot-axis {
+  position: absolute;
+  margin: 0;
+  font-size: var(--plot-axis-size);
+  line-height: 1.2;
+  letter-spacing: var(--plot-axis-track);
+  text-transform: uppercase;
+  color: var(--plot-axis-ink);
+  white-space: nowrap;
+}
+
+.case__plot-axis--top    { left: calc(50% + 11px); top: calc(var(--plot-inset) - 6px); }
+.case__plot-axis--bottom { left: calc(50% + 11px); bottom: calc(var(--plot-inset) - 6px); }
+.case__plot-axis--left   { left: var(--plot-inset); top: calc(50% + 9px); }
+.case__plot-axis--right  { right: var(--plot-inset); top: calc(50% + 9px); }
+
+/* A plotted channel: a mark at (--x, --y) and its name and note beside it. */
+.case__plot-point {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  max-width: 36%;
+  padding-left: calc(var(--plot-mark) + var(--plot-gap));
+}
+
+/* Centred on the name's line box rather than on an em of the inherited size,
+   which is the body's 14px and would sit the mark a pixel high. */
+.case__plot-point::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: calc((var(--plot-name-size) * 1.3 - var(--plot-mark)) / 2);
+  width: var(--plot-mark);
+  height: var(--plot-mark);
+  background: var(--plot-name-ink);
+}
+
+/* The website is the point the section is arguing towards, so it is the one
+   that sits to the left of its mark and the one set larger. */
+/* Anchored by its right edge rather than shifted by a transform: a box with
+   only `left` set shrink-to-fits against the space to its right, which here is
+   the 9% between the mark and the edge of the field, so the note wrapped to a
+   sliver and fell out of the box. */
+.case__plot-point--right {
+  left: auto;
+  right: calc(100% - var(--x));
+  padding-left: 0;
+  padding-right: calc(var(--plot-mark) + var(--plot-gap));
+  text-align: right;
+}
+
+.case__plot-point--right::before { left: auto; right: 0; }
+
+.case__plot-point--lead::before {
+  top: calc((var(--plot-lead-size) * 1.3 - var(--plot-mark)) / 2);
+}
+
+.case__plot-name {
+  margin: 0;
+  font-weight: 400;
+  font-size: var(--plot-name-size);
+  line-height: 1.3;
+  letter-spacing: -0.32px;
+  color: var(--plot-name-ink);
+}
+
+.case__plot-point--lead .case__plot-name {
+  font-size: var(--plot-lead-size);
+  letter-spacing: -0.4px;
+}
+
+.case__plot-note {
+  margin: 2px 0 0;
+  font-size: var(--plot-note-size);
+  line-height: 1.35;
+  letter-spacing: -0.12px;
+  color: var(--plot-note-ink);
+}
+
 /* TEMPORARY — 688x410 stand-ins until the real images land. The box is a
    child of the figure rather than the figure itself, so that a figure with
    a caption still sizes its picture and not the pair. */
