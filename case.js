@@ -94,3 +94,42 @@
      it, so the offsets are worth reading again once they land. */
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(mark);
 })();
+
+/* ------------------------------------------------------------------
+ * Lottie figures
+ *
+ * A Lottie is a 60fps animation, so it only runs while it is on screen, and it
+ * holds its first frame rather than looping when the reader has asked for
+ * reduced motion. If the player did not load, the figure keeps its ground and
+ * its caption and nothing throws.
+ * ------------------------------------------------------------------ */
+(function () {
+  var nodes = document.querySelectorAll("[data-lottie]");
+  if (!nodes.length || !window.lottie) return;
+
+  var still = window.matchMedia
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  Array.prototype.forEach.call(nodes, function (el) {
+    var anim = window.lottie.loadAnimation({
+      container: el,
+      renderer: "svg",
+      loop: !still,
+      autoplay: false,
+      path: el.getAttribute("data-lottie")
+    });
+
+    if (still) {
+      anim.addEventListener("DOMLoaded", function () { anim.goToAndStop(0, true); });
+      return;
+    }
+
+    if (!window.IntersectionObserver) { anim.play(); return; }
+
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) anim.play(); else anim.pause();
+      });
+    }, { rootMargin: "100px" }).observe(el);
+  });
+})();
