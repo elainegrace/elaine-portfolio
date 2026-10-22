@@ -466,6 +466,17 @@ main { counter-reset: case-section 1; }
 
 .case__lottie svg { display: block; }
 
+/* TEMPORARY — a figure that may be cut. Held back so it reads as undecided
+   rather than as part of the page, without moving anything around it: the
+   slot keeps its size and its number, so nothing below renumbers while the
+   decision is open. Remove the modifier to keep the figure, or the figure
+   to drop it. */
+.case__figure--maybe img,
+.case__figure--maybe .case__placeholder,
+.case__figure--maybe figcaption {
+  opacity: 0.3;
+}
+
 .case__placeholder {
   aspect-ratio: 688 / 410;
   background: var(--placeholder-media);
