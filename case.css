@@ -452,7 +452,7 @@ main { counter-reset: case-section 1; }
 /* TEMPORARY — 688x410 stand-ins until the real images land. The box is a
    child of the figure rather than the figure itself, so that a figure with
    a caption still sizes its picture and not the pair. */
-/* Figure 5.2 is a Lottie rather than a picture, so it takes the figure's box
+/* Figure 5.3 is a Lottie rather than a picture, so it takes the figure's box
    and ground by hand. The player draws an SVG that fits inside, the same way
    object-fit:contain fits the others, so it sits in the run as one of them.
    The box holds its size before the player loads, and keeps the ground if the
