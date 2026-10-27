@@ -652,6 +652,13 @@ a.nav__item { text-decoration: none; }
   z-index: var(--z-content);
   min-height: var(--vh);
   padding-bottom: calc(var(--vh) * var(--section-lead));
+
+  /* The section opens with --work-lead of empty scroll before the first card,
+     which is the rhythm for someone reading down the page. Someone who clicks
+     WORK has asked to be at the work, so the jump skips that lead and lands on
+     the first card: a negative scroll margin moves the landing point down by
+     exactly the padding --work-lead puts above the cards. */
+  scroll-margin-top: calc(var(--vh) * var(--work-lead) * -1);
 }
 
 /* Part of the left rail, so it holds at the top of the viewport rather than
@@ -1427,6 +1434,14 @@ a[href]:focus-visible {
        gets above it, so the heading, logo and nav all land and hold before
        the first cover rises into view. */
     padding-top: calc((var(--vh) * var(--work-lead)) + var(--eyebrow-foot) + 80px);
+  }
+
+  /* The lead is bigger here, so the jump has further to skip. Kept with
+     the padding it mirrors rather than beside the desktop rule, because
+     the two have to move together. */
+  .work {
+    scroll-margin-top: calc(((var(--vh) * var(--work-lead))
+      + var(--eyebrow-foot) + 80px) * -1);
     /* Clears the fixed nav (60 + its own height) and the logo band below it. */
     padding-bottom: 140px;
   }
