@@ -133,3 +133,124 @@
     }, { rootMargin: "100px" }).observe(el);
   });
 })();
+
+/* ------------------------------------------------------------------
+ * Zoomable figures
+ *
+ * A figure marked --zoomable opens in the one dialog at the foot of the page.
+ * <dialog> is doing the work that is easy to get wrong by hand: Escape, the
+ * backdrop, trapping focus inside, making the rest of the page inert, and
+ * handing focus back to the opener on close.
+ *
+ * The picture is the one the page already loaded, so opening costs nothing on
+ * the network — the browser repaints what it has.
+ * ------------------------------------------------------------------ */
+(function () {
+  var dialog = document.querySelector(".case__zoom");
+  var openers = document.querySelectorAll(".case__zoom-open");
+  if (!dialog || !openers.length || !dialog.showModal) return;
+
+  var stage = dialog.querySelector(".case__zoom-stage");
+  var img = dialog.querySelector(".case__zoom-img");
+  var caption = dialog.querySelector(".case__zoom-caption");
+  var closer = dialog.querySelector(".case__zoom-close");
+
+  /* The number the caption shows is a CSS counter, so it is not in the DOM to
+     read. Derived here the same way the counter is: the overview is 01, so the
+     first .case__section is 02, and figures count from one inside each. */
+  function figureNumber(figure) {
+    var section = figure.closest(".case__section");
+    if (!section) return "";
+    var sections = [].slice.call(document.querySelectorAll(".case__section"));
+    var figures = [].slice.call(section.querySelectorAll(".case__figure"));
+    return (sections.indexOf(section) + 2) + "." + (figures.indexOf(figure) + 1);
+  }
+
+  function fit() {
+    dialog.classList.remove("is-zoomed");
+    dialog.style.removeProperty("--case-zoom-w");
+  }
+
+  /* Three times the width it is resting at, or the picture's own width if
+     that is smaller. Proportional to the screen rather than a fixed number,
+     so a phone is not asked to paint 7200px of image. */
+  function zoom() {
+    var resting = img.getBoundingClientRect().width;
+    var w = Math.min(img.naturalWidth, Math.round(resting * 3));
+    dialog.style.setProperty("--case-zoom-w", w + "px");
+    dialog.classList.add("is-zoomed");
+  }
+
+  [].forEach.call(openers, function (opener) {
+    opener.addEventListener("click", function () {
+      var figure = opener.closest(".case__figure");
+      var source = opener.querySelector("img");
+      var cap = figure && figure.querySelector("figcaption");
+      var n = figure ? figureNumber(figure) : "";
+
+      img.src = source.currentSrc || source.src;
+      img.alt = source.alt;
+      caption.textContent =
+        (n ? "Figure " + n + ". " : "") + (cap ? cap.textContent : "");
+
+      fit();
+      dialog.showModal();
+    });
+  });
+
+  /* Clicking the picture toggles between fit and zoomed; clicking the ground
+     around it closes, which is what a reader expects of an overlay. */
+  img.addEventListener("click", function (e) {
+    e.stopPropagation();
+    if (dialog.classList.contains("is-zoomed")) fit(); else zoom();
+  });
+
+  stage.addEventListener("click", function () { dialog.close(); });
+  closer.addEventListener("click", function () { dialog.close(); });
+
+  /* Drag to pan while zoomed.
+
+     Two things make this fiddly. A pointerdown on an <img> starts the
+     browser's own image drag, which swallows every pointermove after the
+     first, so the drag has to be prevented outright. And a pointer that
+     leaves the picture mid-drag stops sending it events, so the move and up
+     are listened for on the document rather than the image. */
+  var from = null;
+
+  function onMove(e) {
+    if (!from) return;
+    stage.scrollLeft = from.left - (e.clientX - from.x);
+    stage.scrollTop = from.top - (e.clientY - from.y);
+    if (Math.abs(e.clientX - from.x) > 3 || Math.abs(e.clientY - from.y) > 3) {
+      from.moved = true;
+    }
+  }
+
+  function onUp() {
+    img.classList.remove("is-panning");
+    document.removeEventListener("pointermove", onMove);
+    // Left set until after the click that follows, so a drag is not read as
+    // a click toggling the zoom; cleared on the next tick.
+    setTimeout(function () { from = null; }, 0);
+  }
+
+  img.addEventListener("pointerdown", function (e) {
+    if (!dialog.classList.contains("is-zoomed")) return;
+    e.preventDefault();
+    from = {
+      x: e.clientX, y: e.clientY,
+      left: stage.scrollLeft, top: stage.scrollTop,
+      moved: false
+    };
+    img.classList.add("is-panning");
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp, { once: true });
+  });
+
+  /* A drag that actually moved should not also toggle the zoom. */
+  img.addEventListener("click", function (e) {
+    if (from && from.moved) e.stopImmediatePropagation();
+  }, true);
+
+  dialog.addEventListener("close", fit);
+})();

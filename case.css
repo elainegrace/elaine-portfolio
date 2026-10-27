@@ -551,6 +551,154 @@ main { counter-reset: case-section 1; }
 /* The same break a prose block gets from whatever sits above it. */
 .case__section > .case__timeline { margin-top: var(--case-block-gap); }
 
+/* ------------------------------------------------------------------
+ * Zoomable figures
+ *
+ * The diagrams are drawn far larger than the page shows them — 4.3 runs 7200
+ * wide and sits at 671, under a tenth of its drawn size — so the labels are
+ * there but not readable. Opening one full size is the difference between the
+ * drawing being decorative and being legible.
+ * ------------------------------------------------------------------ */
+
+/* The opener is a button so it is reachable by keyboard and announced as
+   something to activate; everything that makes it look like a button is
+   taken back off. The picture inside keeps its alt, which becomes the
+   button's name — a reader hears the description and that it can be opened. */
+.case__zoom-open {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: zoom-in;
+}
+
+/* The only hint that a figure opens, short of hovering it. A hairline in the
+   page's own rule colour, which is quiet enough to disappear until the
+   pointer is on it. */
+.case__zoom-open:hover img,
+.case__zoom-open:focus-visible img {
+  outline: 1px solid var(--case-rule);
+  outline-offset: 4px;
+}
+
+.case__zoom-open:focus-visible img { outline-color: var(--ink); }
+
+/* ---- the overlay ---- */
+.case__zoom {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--case-figure-ground);
+  overflow: hidden;
+}
+
+.case__zoom::backdrop { background: rgba(10, 10, 10, 0.6); }
+
+/* The picture sits in a pane that scrolls once it is bigger than the pane.
+   Fit is the resting state; zoomed is the same stage with a wider picture. */
+.case__zoom-stage {
+  position: absolute;
+  inset: 0 0 var(--case-zoom-bar) 0;
+  display: flex;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* margin:auto rather than centring on the container. A grid or flex item that
+   is centred and then overflows gets clipped at the start edge and cannot be
+   scrolled back to; auto margins centre it while it is smaller and let it
+   scroll properly once it is not.
+
+   The stage has a definite height, so the picture's max-height resolves
+   against it — inside a content-sized grid row it had nothing to resolve
+   against and the picture stood taller than the pane. */
+.case__zoom-img {
+  display: block;
+  margin: auto;
+  -webkit-user-drag: none;
+  user-select: none;
+  max-width: 100%;
+  max-height: 100%;
+  cursor: zoom-in;
+}
+
+/* Zoomed: the picture takes a width of its own and the stage scrolls to it.
+   place-items keeps it centred while it is still smaller than the pane. */
+.case__zoom.is-zoomed .case__zoom-img {
+  max-width: none;
+  max-height: none;
+  width: var(--case-zoom-w);
+  height: auto;
+  cursor: grab;
+}
+
+.case__zoom.is-zoomed .case__zoom-img.is-panning { cursor: grabbing; }
+
+/* ---- the bar along the foot ---- */
+.case__zoom {
+  --case-zoom-bar: 64px;
+}
+
+.case__zoom-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--case-zoom-bar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 20px;
+  border-top: 1px solid var(--case-rule);
+  background: var(--ground);
+}
+
+/* The caption travels with the picture: several of these diagrams carry
+   their key in the caption rather than in the artwork, and a zoomed diagram
+   without its key is harder to read, not easier. */
+.case__zoom-caption {
+  margin: 0;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: -0.24px;
+  color: var(--muted);
+}
+
+.case__zoom-close {
+  flex: none;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--case-rule);
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: -0.24px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 200ms linear, border-color 200ms linear;
+}
+
+.case__zoom-close:hover,
+.case__zoom-close:focus-visible {
+  color: var(--ink-strong);
+  border-color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case__zoom-close { transition: none; }
+}
+
 .case__placeholder {
   aspect-ratio: 688 / 410;
   background: var(--placeholder-media);
