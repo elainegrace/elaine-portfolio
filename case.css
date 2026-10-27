@@ -536,6 +536,18 @@ main { counter-reset: case-section 1; }
 
 .case__timeline strong { font-weight: 500; color: var(--ink-strong); }
 
+/* A point that is not a version — something that landed between two of them.
+   Outlined rather than filled, so the versions read as the sequence and this
+   reads as the thing that moved it. The diagrams already separate meaning this
+   way: Figure 4.3's key has a filled mark, an outlined one and a dashed one.
+
+   Filled with the page's own ground rather than left transparent, so the rule
+   running behind it is punched out instead of crossing the middle. */
+.case__timeline li.case__timeline-between::after {
+  background: var(--ground);
+  border: 1px solid var(--ink-strong);
+}
+
 /* The same break a prose block gets from whatever sits above it. */
 .case__section > .case__timeline { margin-top: var(--case-block-gap); }
 
