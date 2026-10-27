@@ -600,13 +600,26 @@ main { counter-reset: case-section 1; }
   overflow: hidden;
 }
 
+/* Laid out as a column rather than pinning the bar to the foot. The bar had
+   a fixed height, which held until a long caption on a phone needed five
+   lines and ran off the bottom of the screen; as a column the bar is as tall
+   as its caption needs and the stage takes whatever is left. Keyed to [open]
+   so the dialog still hides itself when it is closed. */
+.case__zoom[open] {
+  display: flex;
+  flex-direction: column;
+}
+
 .case__zoom::backdrop { background: rgba(10, 10, 10, 0.6); }
 
 /* The picture sits in a pane that scrolls once it is bigger than the pane.
    Fit is the resting state; zoomed is the same stage with a wider picture. */
 .case__zoom-stage {
-  position: absolute;
-  inset: 0 0 var(--case-zoom-bar) 0;
+  flex: 1 1 auto;
+  /* Without this a flex item refuses to shrink below its content, and the
+     picture's max-height has nothing smaller than the content to resolve
+     against. */
+  min-height: 0;
   display: flex;
   overflow: auto;
   overscroll-behavior: contain;
@@ -643,21 +656,14 @@ main { counter-reset: case-section 1; }
 .case__zoom.is-zoomed .case__zoom-img.is-panning { cursor: grabbing; }
 
 /* ---- the bar along the foot ---- */
-.case__zoom {
-  --case-zoom-bar: 64px;
-}
-
 .case__zoom-bar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--case-zoom-bar);
+  flex: none;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 0 20px;
+  padding: 12px 20px;
   border-top: 1px solid var(--case-rule);
   background: var(--ground);
 }
@@ -673,6 +679,10 @@ main { counter-reset: case-section 1; }
   line-height: 1.3;
   letter-spacing: -0.24px;
   color: var(--muted);
+  /* A ceiling, so a caption longer than any written so far takes a scrollbar
+     rather than most of a phone screen. */
+  max-height: 32dvh;
+  overflow-y: auto;
 }
 
 .case__zoom-close {

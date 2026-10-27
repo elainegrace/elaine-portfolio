@@ -147,8 +147,27 @@
  * ------------------------------------------------------------------ */
 (function () {
   var dialog = document.querySelector(".case__zoom");
-  var openers = document.querySelectorAll(".case__zoom-open");
-  if (!dialog || !openers.length || !dialog.showModal) return;
+  if (!dialog || !dialog.showModal) return;
+
+  /* Every figure holding a real picture becomes openable. Done here rather
+     than in the markup so that a picture dropped into a stand-in is openable
+     the moment it lands, with no second step to remember — and so the figures
+     stay plain <figure><img> if the script never runs.
+
+     A stand-in is skipped: there is nothing to enlarge in a grey box. So is
+     the Lottie, which is a div rather than an img. */
+  var openers = [];
+  [].forEach.call(document.querySelectorAll(".case__figure"), function (figure) {
+    var img = figure.querySelector("img");
+    if (!img || img.closest(".case__zoom-open")) return;
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = "case__zoom-open";
+    img.parentNode.insertBefore(button, img);
+    button.appendChild(img);
+    openers.push(button);
+  });
+  if (!openers.length) return;
 
   var stage = dialog.querySelector(".case__zoom-stage");
   var img = dialog.querySelector(".case__zoom-img");
@@ -181,7 +200,7 @@
     dialog.classList.add("is-zoomed");
   }
 
-  [].forEach.call(openers, function (opener) {
+  openers.forEach(function (opener) {
     opener.addEventListener("click", function () {
       var figure = opener.closest(".case__figure");
       var source = opener.querySelector("img");
@@ -190,8 +209,11 @@
 
       img.src = source.currentSrc || source.src;
       img.alt = source.alt;
+      /* Trimmed: a few figures are still waiting on their caption, and
+         "Figure 2.2." reads better than "Figure 2.2. " with a space hanging
+         off the end of it. */
       caption.textContent =
-        (n ? "Figure " + n + ". " : "") + (cap ? cap.textContent : "");
+        ((n ? "Figure " + n + ". " : "") + (cap ? cap.textContent : "")).trim();
 
       fit();
       dialog.showModal();
