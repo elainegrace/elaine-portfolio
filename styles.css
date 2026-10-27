@@ -113,10 +113,13 @@
      behind it, so it leaves rather than be scrolled over. */
   --release: 0;
 
-  /* Which section the rail and nav are currently naming. These sum to 1 and
-     hand off as each progress value completes, so a new section is one more
-     weight rather than a rethread of everything downstream. */
-  --w-work: calc(1 - var(--q));
+  /* Which section the rail and nav are currently naming. Each is the gap
+     between the progress that lights it and the one that takes it away, so a
+     new section is one more weight rather than a rethread of everything
+     downstream. They sum to --p, not to 1: in the hero no section is being
+     named yet, and WORK rises on the same handover the rail and the nav
+     already travel on rather than being lit from the first pixel. */
+  --w-work: calc(var(--p) - var(--q));
   --w-about: calc(var(--q) - var(--r));
   --w-extras: calc(var(--r) - var(--t));
   --w-contact: var(--t);
