@@ -477,6 +477,68 @@ main { counter-reset: case-section 1; }
   opacity: 0.3;
 }
 
+/* A short vertical timeline: a hairline down the left with a mark at each
+   point. Used where one paragraph was carrying two versions in sequence and
+   reading as a single block, so the step between them was buried mid-sentence.
+
+   The mark is square because nothing on this site is round — there is not one
+   border-radius in either stylesheet — so a circle here would be the first and
+   would read as borrowed. One line below makes it round if that is wanted.
+
+   The rule runs from each mark down past the padding to the next mark's top,
+   and is dropped on the last point so it never overhangs the end. */
+.case__timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: calc((var(--case-column) * 4) + (var(--gutter) * 3));
+  max-width: 100%;
+}
+
+.case__timeline li {
+  position: relative;
+  padding-left: 22px;
+  padding-bottom: 20px;
+}
+
+.case__timeline li:last-child { padding-bottom: 0; }
+
+.case__timeline li::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 7px;
+  bottom: -7px;
+  width: 1px;
+  background: var(--case-rule);
+}
+
+.case__timeline li:last-child::before { content: none; }
+
+/* Painted after the rule, so it sits over the line rather than beside it. */
+.case__timeline li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 7px;
+  height: 7px;
+  background: var(--ink-strong);
+}
+
+.case__timeline p {
+  margin: 0;
+  font-weight: 300;
+  font-size: var(--case-body-size);
+  line-height: var(--case-body-lead);
+  letter-spacing: var(--case-body-track);
+}
+
+.case__timeline strong { font-weight: 500; color: var(--ink-strong); }
+
+/* The same break a prose block gets from whatever sits above it. */
+.case__section > .case__timeline { margin-top: var(--case-block-gap); }
+
 .case__placeholder {
   aspect-ratio: 688 / 410;
   background: var(--placeholder-media);
