@@ -213,8 +213,11 @@
       /* Trimmed: a few figures are still waiting on their caption, and
          "Figure 2.2." reads better than "Figure 2.2. " with a space hanging
          off the end of it. */
+      /* innerText rather than textContent: two captions carry a <br> between
+         the path to the page and the sentence, and textContent drops it,
+         running the two together. The bar keeps the break with pre-line. */
       caption.textContent =
-        ((n ? "Figure " + n + ". " : "") + (cap ? cap.textContent : "")).trim();
+        ((n ? "Figure " + n + ". " : "") + (cap ? cap.innerText : "")).trim();
 
       fit();
       dialog.showModal();
