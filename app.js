@@ -150,6 +150,8 @@
   var extras = document.querySelector(".extras");
   var contact = document.querySelector(".contact");
   var bio = document.querySelector(".bio");
+  var logo = document.querySelector(".logo");
+  var settling = 0;
   var bioTitle = document.querySelector(".bio__title");
   var nav = document.querySelector(".nav");
   var eyebrow = document.querySelector(".eyebrow");
@@ -353,6 +355,7 @@
     measureBio();
     measureNav();
     apply();
+    settle();
   }
 
   // In Contact the nav comes up to the top of the viewport, where the section
@@ -444,6 +447,30 @@
       queued = true;
       requestAnimationFrame(apply);
     }
+    clearTimeout(settling);
+    settling = setTimeout(settle, 120);
+  }
+
+  /* The logo is a link to the top now, so it has to stop being one wherever it
+     cannot be seen: a fixed box at opacity 0 still catches clicks and still
+     takes a tab stop.
+
+     Its opacity is asked for rather than worked out again here. The sum
+     differs by width — below 810 the logo stays through Contact — so a copy
+     of it in JS would be two things to keep in step, and this cannot drift
+     from whichever rule is actually in force.
+
+     Asking costs a forced style recalc, which is why it happens once the
+     scroll settles instead of on every frame: nobody clicks or tabs to the
+     logo mid-scroll, and 120ms after they stop is long before they reach it.
+     measure() calls it too, which covers first paint, resize and the font
+     swap — every moment the answer can change without a scroll. */
+  function settle() {
+    if (!logo) return;
+    logo.classList.toggle(
+      "is-dim",
+      parseFloat(getComputedStyle(logo).opacity) < 0.01
+    );
   }
 
   // TEMPORARY. A bench for feeling the two smoothing levers against each

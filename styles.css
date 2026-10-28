@@ -360,6 +360,7 @@ body {
   );
   z-index: var(--z-rail);
   margin: 0;
+  text-decoration: none;
   width: var(--logo-w);
   height: var(--logo-h);
   display: flex;
@@ -378,6 +379,16 @@ body {
   /* Contact has no logo — the copyright takes this corner. */
   opacity: calc(var(--rail-fade) * (1 - var(--t)));
 }
+
+/* Taken out of the page entirely once that opacity reaches nothing, which
+   above 810px is Contact — the one place the logo is gone rather than faint.
+   A fixed box at opacity 0 is still a hit target and still a tab stop, so
+   without this the corner holds an invisible link there. The class is set
+   from the logo's own computed opacity, so it follows whichever rule is in
+   force at this width: below 810 the logo stays through Contact and never
+   goes dim. Hidden rather than pointer-events:none because the tab stop has
+   to go as well. */
+.logo.is-dim { visibility: hidden; }
 
 /* The mark, bleeding its stroke a pixel past the shape the positions are given
    for. Painted behind the wordmark but inside the logo's own stacking context,
