@@ -113,6 +113,10 @@
   --case-block-gap: 40px;      /* a plain break between parts of a section */
   --case-head-label: 53px;     /* so every title starts on the same x */
   --case-rule: #e4e2e1;        /* the one hairline on the page, under a fold */
+  /* Two arrows pointing out of a corner — the mark on a figure that opens.
+     Drawn at the same 1.5 stroke as the arrow in the homepage's contact
+     links, so the two read as one hand. */
+  --case-zoom-glyph: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-7 7"/><path d="M10 20H4v-6"/><path d="M4 20l7-7"/></svg>');
   --case-figure-ground: #f5f3ef;  /* the ground the diagrams are drawn on */
 }
 
@@ -587,6 +591,30 @@ main { counter-reset: case-section 1; }
 
 .case__zoom-open:focus-visible img { outline-color: var(--ink); }
 
+/* On a touchscreen there is no hover to carry the hint and no cursor to
+   change, so the figure has to say it at rest. Keyed to the pointer rather
+   than to a width: a tablet with a mouse keeps the quieter hover version,
+   a touch laptop gets the mark. */
+@media (hover: none) {
+  .case__zoom-open { position: relative; }
+
+  .case__zoom-open::after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--case-rule);
+    background:
+      var(--case-zoom-glyph) center / 14px 14px no-repeat,
+      var(--ground);
+  }
+
+  /* Pressed, so a tap is acknowledged where a hover state cannot be. */
+  .case__zoom-open:active::after { border-color: var(--ink); }
+}
+
 /* ---- the overlay ---- */
 .case__zoom {
   width: 100vw;
@@ -667,6 +695,47 @@ main { counter-reset: case-section 1; }
   border-top: 1px solid var(--case-rule);
   background: var(--ground);
 }
+
+/* The same job as the Close button along the foot, put where a reader whose
+   thumb is at the top of a phone, or whose eye is on the picture rather than
+   the bar, will look for it. */
+.case__zoom-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--case-rule);
+  background: var(--ground);
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 200ms linear, border-color 200ms linear;
+}
+
+.case__zoom-x svg { width: 18px; height: 18px; display: block; }
+
+.case__zoom-x:hover,
+.case__zoom-x:focus-visible {
+  color: var(--ink-strong);
+  border-color: var(--ink);
+}
+
+/* The dialog puts focus on this button as it opens, so without a ring of our
+   own the browser's default one — orange, 3px — is the first thing on screen
+   every time a figure is opened. Same 1px at 3px offset the page's links
+   take. */
+.case__zoom-x:focus-visible,
+.case__zoom-close:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) { .case__zoom-x { transition: none; } }
 
 /* The caption travels with the picture: several of these diagrams carry
    their key in the caption rather than in the artwork, and a zoomed diagram

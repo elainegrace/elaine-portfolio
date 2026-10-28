@@ -173,6 +173,7 @@
   var img = dialog.querySelector(".case__zoom-img");
   var caption = dialog.querySelector(".case__zoom-caption");
   var closer = dialog.querySelector(".case__zoom-close");
+  var ex = dialog.querySelector(".case__zoom-x");
 
   /* The number the caption shows is a CSS counter, so it is not in the DOM to
      read. Derived here the same way the counter is: the overview is 01, so the
@@ -190,12 +191,12 @@
     dialog.style.removeProperty("--case-zoom-w");
   }
 
-  /* Three times the width it is resting at, or the picture's own width if
-     that is smaller. Proportional to the screen rather than a fixed number,
-     so a phone is not asked to paint 7200px of image. */
+  /* Twice the width it is resting at, or the picture's own width if that is
+     smaller. Proportional to the screen rather than a fixed number, so a
+     phone is not asked to paint 7200px of image. */
   function zoom() {
     var resting = img.getBoundingClientRect().width;
-    var w = Math.min(img.naturalWidth, Math.round(resting * 3));
+    var w = Math.min(img.naturalWidth, Math.round(resting * 2));
     dialog.style.setProperty("--case-zoom-w", w + "px");
     dialog.classList.add("is-zoomed");
   }
@@ -229,6 +230,7 @@
 
   stage.addEventListener("click", function () { dialog.close(); });
   closer.addEventListener("click", function () { dialog.close(); });
+  if (ex) ex.addEventListener("click", function () { dialog.close(); });
 
   /* Drag to pan while zoomed.
 
