@@ -191,19 +191,12 @@
     dialog.style.removeProperty("--case-zoom-w");
   }
 
-  /* How far a click takes the picture past its resting width. Two for every
-     figure unless one asks for more with data-zoom, which a dense one can:
-     8.2 is a board of sticky notes, and twice its resting width does not
-     read. Set per figure rather than globally, so the step stays small
-     wherever small is enough. */
-  var factor = 2;
-
-  /* That many times the width it is resting at, or the picture's own width if
-     that is smaller. Proportional to the screen rather than a fixed number,
-     so a phone is not asked to paint 7200px of image. */
+  /* Twice the width it is resting at, or the picture's own width if that is
+     smaller. Proportional to the screen rather than a fixed number, so a
+     phone is not asked to paint 7200px of image. */
   function zoom() {
     var resting = img.getBoundingClientRect().width;
-    var w = Math.min(img.naturalWidth, Math.round(resting * factor));
+    var w = Math.min(img.naturalWidth, Math.round(resting * 2));
     dialog.style.setProperty("--case-zoom-w", w + "px");
     dialog.classList.add("is-zoomed");
   }
@@ -214,7 +207,6 @@
       var source = opener.querySelector("img");
       var cap = figure && figure.querySelector("figcaption");
       var n = figure ? figureNumber(figure) : "";
-      factor = (figure && parseFloat(figure.getAttribute("data-zoom"))) || 2;
 
       img.src = source.currentSrc || source.src;
       img.alt = source.alt;
