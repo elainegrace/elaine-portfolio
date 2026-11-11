@@ -504,9 +504,13 @@ a.case__link:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ink);
+  /* Full ink rather than the body grey. Over a blurred board the grey read
+     as a smudge; weight does not fix that, colour does — a thicker grey
+     chevron only reads as a thicker smudge, and the site has no stroke but
+     1.5 anywhere to thicken it to. */
+  color: var(--ink-strong);
   cursor: pointer;
-  transition: opacity 240ms linear, color 200ms linear;
+  transition: opacity 240ms linear;
 }
 
 .case__deck-arrow--prev { left: 0; }
@@ -538,13 +542,24 @@ a.case__link:focus-visible {
 /* Above the blur, and unmasked. */
 .case__deck-arrow svg {
   position: relative;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: block;
 }
 
-.case__deck-arrow:hover:not(:disabled),
-.case__deck-arrow:focus-visible { color: var(--ink-strong); }
+/* The chevron is already at full ink, so hover deepens the band under it
+   instead. */
+.case__deck-arrow:hover:not(:disabled)::before,
+.case__deck-arrow:focus-visible::before {
+  background: linear-gradient(to right,
+    rgba(252, 252, 252, 0.62), rgba(252, 252, 252, 0));
+}
+
+.case__deck-arrow--next:hover:not(:disabled)::before,
+.case__deck-arrow--next:focus-visible::before {
+  background: linear-gradient(to left,
+    rgba(252, 252, 252, 0.62), rgba(252, 252, 252, 0));
+}
 
 /* At the first board and the last there is nothing to carry on into, so the
    band goes rather than sitting there greyed out. */
