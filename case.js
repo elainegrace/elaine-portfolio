@@ -157,9 +157,10 @@
      A stand-in is skipped: there is nothing to enlarge in a grey box. So is
      the Lottie, which is a div rather than an img. */
   var openers = [];
-  [].forEach.call(document.querySelectorAll(".case__figure"), function (figure) {
-    var img = figure.querySelector("img");
-    if (!img || img.closest(".case__zoom-open")) return;
+  /* querySelectorAll, not querySelector: Figure 4.1 is a deck of four boards
+     in one figure, and every one of them opens. */
+  [].forEach.call(document.querySelectorAll(".case__figure img"), function (img) {
+    if (img.closest(".case__zoom-open")) return;
     var button = document.createElement("button");
     button.type = "button";
     button.className = "case__zoom-open";
@@ -280,4 +281,75 @@
   }, true);
 
   dialog.addEventListener("close", fit);
+})();
+
+/* ---- the deck under Figure 4.1 ----
+   The scrolling is the browser's; this only keeps the marks in step with it
+   and moves it when one is clicked. Built here rather than written into the
+   markup so the deck still reads as four pictures with the script off,
+   rather than four pictures and four buttons that do nothing. */
+(function () {
+  [].forEach.call(document.querySelectorAll(".case__deck"), function (deck) {
+    var slides = [].slice.call(deck.querySelectorAll(".case__deck-slide"));
+    if (slides.length < 2) return;
+
+    var still = window.matchMedia
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    var marks = document.createElement("div");
+    marks.className = "case__deck-marks";
+
+    var buttons = slides.map(function (slide, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "case__deck-mark";
+      b.setAttribute("aria-label", "Board " + (i + 1) + " of " + slides.length);
+      b.addEventListener("click", function () {
+        /* scrollIntoView would scroll the page to the deck as well; setting
+           scrollLeft moves only the deck, which is all that was asked for. */
+        deck.scrollTo({ left: slide.offsetLeft - slides[0].offsetLeft,
+                        behavior: still ? "auto" : "smooth" });
+      });
+      marks.appendChild(b);
+      return b;
+    });
+
+    deck.parentNode.insertBefore(marks, deck.nextSibling);
+
+    function paint() {
+      /* Whichever board covers the middle of the frame is the one showing. */
+      var middle = deck.scrollLeft + deck.clientWidth / 2;
+      var at = 0;
+      for (var i = 0; i < slides.length; i++) {
+        var left = slides[i].offsetLeft - slides[0].offsetLeft;
+        if (middle >= left) at = i;
+      }
+      buttons.forEach(function (b, i) {
+        b.setAttribute("aria-current", i === at ? "true" : "false");
+      });
+    }
+
+    var queued = false;
+    deck.addEventListener("scroll", function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; paint(); });
+    }, { passive: true });
+
+    /* Left and right step through the boards once the deck has focus. */
+    deck.tabIndex = 0;
+    deck.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      e.preventDefault();
+      var current = buttons.findIndex ? buttons.findIndex(function (b) {
+        return b.getAttribute("aria-current") === "true";
+      }) : 0;
+      var next = Math.min(slides.length - 1,
+                          Math.max(0, current + (e.key === "ArrowRight" ? 1 : -1)));
+      buttons[next].click();
+    });
+
+    window.addEventListener("resize", paint);
+    paint();
+  });
 })();

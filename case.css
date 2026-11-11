@@ -410,6 +410,91 @@ a.case__link:focus-visible {
   display: block;
 }
 
+/* ---- a figure that holds more than one picture ----
+   Four boards in the space of one figure. Built on scroll snapping rather
+   than on script: the browser does the moving, which gets a swipe on a
+   touchscreen, a two-finger slide on a trackpad and momentum for free, and
+   the pictures are still all there with the script off. Nothing advances on
+   its own — it moves only when someone moves it. */
+.case__deck {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 688 / 410;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  /* so a swipe that runs past the last board does not drag the page with it */
+  overscroll-behavior-x: contain;
+  background: var(--case-figure-ground);
+  scrollbar-width: none;
+}
+
+.case__deck::-webkit-scrollbar { display: none; }
+
+.case__deck-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+/* No rule for the pictures themselves: .case__figure img already gives each
+   one the 688x410 box, contained on the figure ground, which is exactly what
+   a slide wants. An earlier version set height:100% here instead and the
+   percentage had nothing definite to resolve against inside the flex row —
+   the loaded board fell back to its own ratio and the three not yet loaded
+   measured zero, taking the reserved box with them. */
+
+/* The marks sit under the frame rather than over it. Centred, as asked —
+   but outside the picture, because a mark laid over the artwork covers some
+   of it, and these boards carry their title and their legend in the corners.
+   Squares, not circles: there is not one rounded shape anywhere on this
+   site, and the timeline already uses a 7px square to mean "a point in a
+   series", filled for one you are at and outlined for one you are not. */
+.case__deck-marks {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.case__deck-mark {
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The square itself, drawn small inside a target big enough to hit. */
+.case__deck-mark::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--ground);
+  border: 1px solid var(--ink-strong);
+  transition: background 200ms linear;
+}
+
+.case__deck-mark[aria-current="true"]::before { background: var(--ink-strong); }
+
+.case__deck-mark:hover::before { background: var(--muted); }
+
+.case__deck-mark[aria-current="true"]:hover::before { background: var(--ink-strong); }
+
+.case__deck-mark:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: -4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case__deck { scroll-behavior: auto; }
+  .case__deck-mark::before { transition: none; }
+}
+
 /* A caption sits under its image at the page's small size, in the same grey
    the credits' labels use — it names the picture, it is not read as prose.
    It still takes the text measure rather than the picture's: a line of 12px
