@@ -204,31 +204,62 @@
     dialog.classList.add("is-zoomed");
   }
 
-  /* The pictures the overlay can step between without closing: the ones in
-     the figure it was opened from. One for most figures, four for the deck. */
+  /* What the overlay can step between without closing: the pictures of the
+     figure it was opened from — one for most, four for the deck — and, where
+     a picture is a detail of a bigger one and names it with data-whole, that
+     whole picture on the end. Figure 5.1 is a crop of board 4.1.b, and
+     stepping to the board is how the overlay shows where the crop sits.
+
+     The whole is a plain entry rather than a hidden <img> on the page: a
+     hidden picture is still a picture the browser has to decide whether to
+     fetch, and this one is 189 megapixels. Here nothing is asked for until
+     the reader steps to it. */
   var group = [];
   var at = 0;
+  var openFigure = null;
+
+  function groupFor(figure, opener) {
+    if (!figure) return [{ opener: opener, img: opener.querySelector("img") }];
+    var items = [].map.call(
+      figure.querySelectorAll(".case__zoom-open"),
+      function (b) { return { opener: b, img: b.querySelector("img") }; }
+    );
+    var first = items[0] && items[0].img;
+    var whole = first && first.getAttribute("data-whole");
+    if (whole) {
+      items.push({
+        src: whole,
+        alt: first.getAttribute("data-whole-alt") || "",
+        caption: first.getAttribute("data-whole-caption") || ""
+      });
+    }
+    return items;
+  }
 
   function show(i) {
     at = i;
-    var opener = group[i];
-    var figure = opener.closest(".case__figure");
-    var source = opener.querySelector("img");
-    var cap = figure && figure.querySelector("figcaption");
-    var n = figure ? figureNumber(figure) : "";
+    var item = group[i];
 
-    img.src = source.currentSrc || source.src;
-    img.alt = source.alt;
-    /* Trimmed: a few figures are still waiting on their caption, and
-       "Figure 2.2." reads better than "Figure 2.2. " with a space hanging
-       off the end of it.
-       innerText rather than textContent: two captions carry a <br> between
-       the path to the page and the sentence, and textContent drops it,
-       running the two together. The bar keeps the break with pre-line. */
-    caption.textContent =
-      ((n ? "Figure " + n + ". " : "") + (cap ? cap.innerText : "")).trim();
+    if (item.img) {
+      var cap = openFigure && openFigure.querySelector("figcaption");
+      var n = openFigure ? figureNumber(openFigure) : "";
+      img.src = item.img.currentSrc || item.img.src;
+      img.alt = item.img.alt;
+      /* Trimmed: a few figures are still waiting on their caption, and
+         "Figure 2.2." reads better than "Figure 2.2. " with a space hanging
+         off the end of it.
+         innerText rather than textContent: two captions carry a <br> between
+         the path to the page and the sentence, and textContent drops it,
+         running the two together. The bar keeps the break with pre-line. */
+      caption.textContent =
+        ((n ? "Figure " + n + ". " : "") + (cap ? cap.innerText : "")).trim();
+    } else {
+      img.src = item.src;
+      img.alt = item.alt;
+      caption.textContent = item.caption;
+    }
 
-    /* Only a figure holding more than one picture needs stepping through. */
+    /* Only a figure with somewhere to step needs the arrows. */
     var many = group.length > 1;
     prev.hidden = next.hidden = !many;
     prev.disabled = i === 0;
@@ -243,7 +274,8 @@
     show(to);
     /* Leave the deck on the board the reader ended on, so closing the
        overlay does not land them back where they started. */
-    var slide = group[to].closest(".case__deck-slide");
+    var opener = group[to].opener;
+    var slide = opener && opener.closest(".case__deck-slide");
     if (slide) {
       var deck = slide.parentNode;
       deck.scrollTo({ left: slide.offsetLeft - deck.firstElementChild.offsetLeft,
@@ -253,11 +285,13 @@
 
   openers.forEach(function (opener) {
     opener.addEventListener("click", function () {
-      var figure = opener.closest(".case__figure");
-      group = figure
-        ? [].slice.call(figure.querySelectorAll(".case__zoom-open"))
-        : [opener];
-      show(group.indexOf(opener));
+      openFigure = opener.closest(".case__figure");
+      group = groupFor(openFigure, opener);
+      var i = 0;
+      for (var k = 0; k < group.length; k++) {
+        if (group[k].opener === opener) { i = k; break; }
+      }
+      show(i);
       dialog.showModal();
     });
   });
