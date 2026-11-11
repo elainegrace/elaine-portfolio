@@ -347,15 +347,15 @@
     var marks = document.createElement("div");
     marks.className = "case__deck-marks";
 
-    /* An arrow either side of the marks. The marks say how many boards there
-       are and which one is showing; the arrows say the thing a mark cannot,
-       which is that this is something you move. Both sit under the frame:
-       an arrow laid over the artwork would cover part of a board, and these
-       carry their title and legend in the corners. */
+    /* An arrow at either edge of the picture itself. The marks say how many
+       boards there are and which one is showing; the arrows say the thing a
+       mark cannot, which is that this is something you move, and they say it
+       where the reader is already looking. */
     function arrow(label, path, by) {
       var b = document.createElement("button");
       b.type = "button";
-      b.className = "case__deck-arrow";
+      b.className = "case__deck-arrow case__deck-arrow--"
+        + (by < 0 ? "prev" : "next");
       b.setAttribute("aria-label", label);
       b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
         + ' stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"'
@@ -388,9 +388,10 @@
       return b;
     });
 
-    marks.insertBefore(back, marks.firstChild);
-    marks.appendChild(on);
-    deck.parentNode.insertBefore(marks, deck.nextSibling);
+    var frame = deck.parentNode;
+    frame.appendChild(back);
+    frame.appendChild(on);
+    frame.parentNode.insertBefore(marks, frame.nextSibling);
 
     function paint() {
       /* Whichever board covers the middle of the frame is the one showing. */

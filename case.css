@@ -444,9 +444,10 @@ a.case__link:focus-visible {
    the loaded board fell back to its own ratio and the three not yet loaded
    measured zero, taking the reserved box with them. */
 
-/* The marks sit under the frame rather than over it. Centred, as asked —
-   but outside the picture, because a mark laid over the artwork covers some
-   of it, and these boards carry their title and their legend in the corners.
+/* The marks sit under the frame, centred. The arrows are over the picture;
+   these are not, because a row of four laid over the artwork would cover a
+   strip of every board, and they are a position readout rather than
+   something the eye needs while looking at the picture.
    Squares, not circles: there is not one rounded shape anywhere on this
    site, and the timeline already uses a 7px square to mean "a point in a
    series", filled for one you are at and outlined for one you are not. */
@@ -481,36 +482,55 @@ a.case__link:focus-visible {
 
 .case__deck-mark[aria-current="true"]::before { background: var(--ink-strong); }
 
-/* The arrows flanking the marks. Same 28px target, and a little air between
-   them and the run of marks so the three parts read as one control rather
-   than six things in a row. */
+/* The frame the arrows sit in. The scroller itself cannot hold them: a child
+   of it would scroll away with the boards. */
+.case__deck-frame { position: relative; }
+
+/* The arrows sit over the picture, at either edge. They are on artwork
+   rather than beside it, so what is behind them is blurred — enough to
+   carry a 1.5px stroke over a sticky note or a dark block, not so much
+   that it reads as a panel laid on the board. */
 .case__deck-arrow {
-  width: 28px;
-  height: 28px;
-  margin: 0 6px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  margin: 0;
   padding: 0;
-  border: 0;
-  background: none;
-  color: var(--ink);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 200ms linear;
+  border: 1px solid var(--case-rule);
+  /* Opaque enough to stand on its own where backdrop-filter is not
+     supported; the blur deepens it where it is. */
+  background: rgba(252, 252, 252, 0.72);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 200ms linear, border-color 200ms linear,
+              opacity 200ms linear;
 }
 
-.case__deck-arrow svg { width: 16px; height: 16px; display: block; }
+.case__deck-arrow--prev { left: 12px; }
+.case__deck-arrow--next { right: 12px; }
+
+.case__deck-arrow svg { width: 18px; height: 18px; display: block; }
 
 .case__deck-arrow:hover:not(:disabled),
-.case__deck-arrow:focus-visible { color: var(--ink-strong); }
+.case__deck-arrow:focus-visible {
+  color: var(--ink-strong);
+  border-color: var(--ink);
+}
 
-/* At the first board and the last there is nowhere to go, and the marks
-   already say which end you are at. */
-.case__deck-arrow:disabled { color: var(--case-rule); cursor: default; }
+/* At the first board and the last there is nowhere to go. Faded rather than
+   removed, so the picture does not change under the reader's eye. */
+.case__deck-arrow:disabled { opacity: 0.35; cursor: default; }
 
 .case__deck-arrow:focus-visible {
   outline: 1px solid var(--ink);
-  outline-offset: -2px;
+  outline-offset: 3px;
 }
 
 .case__deck-mark:hover::before { background: var(--muted); }
