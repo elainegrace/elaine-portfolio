@@ -481,6 +481,38 @@ a.case__link:focus-visible {
 
 .case__deck-mark[aria-current="true"]::before { background: var(--ink-strong); }
 
+/* The arrows flanking the marks. Same 28px target, and a little air between
+   them and the run of marks so the three parts read as one control rather
+   than six things in a row. */
+.case__deck-arrow {
+  width: 28px;
+  height: 28px;
+  margin: 0 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 200ms linear;
+}
+
+.case__deck-arrow svg { width: 16px; height: 16px; display: block; }
+
+.case__deck-arrow:hover:not(:disabled),
+.case__deck-arrow:focus-visible { color: var(--ink-strong); }
+
+/* At the first board and the last there is nowhere to go, and the marks
+   already say which end you are at. */
+.case__deck-arrow:disabled { color: var(--case-rule); cursor: default; }
+
+.case__deck-arrow:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: -2px;
+}
+
 .case__deck-mark:hover::before { background: var(--muted); }
 
 .case__deck-mark[aria-current="true"]:hover::before { background: var(--ink-strong); }
@@ -492,7 +524,8 @@ a.case__link:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .case__deck { scroll-behavior: auto; }
-  .case__deck-mark::before { transition: none; }
+  .case__deck-mark::before,
+  .case__deck-arrow { transition: none; }
 }
 
 /* A caption sits under its image at the page's small size, in the same grey
@@ -821,6 +854,61 @@ main { counter-reset: case-section 1; }
 }
 
 @media (prefers-reduced-motion: reduce) { .case__zoom-x { transition: none; } }
+
+/* Stepping between the pictures of a figure that holds several, without
+   closing. Mid-height at either edge, where a reader's thumb already is on
+   a phone, and drawn like the X in the opposite corner. Hidden outright for
+   a figure with only one picture, rather than shown dead. */
+.case__zoom-prev,
+.case__zoom-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--case-rule);
+  background: var(--ground);
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 200ms linear, border-color 200ms linear;
+}
+
+.case__zoom-prev { left: 12px; }
+.case__zoom-next { right: 12px; }
+
+.case__zoom-prev svg,
+.case__zoom-next svg { width: 18px; height: 18px; display: block; }
+
+.case__zoom-prev:hover:not(:disabled),
+.case__zoom-next:hover:not(:disabled),
+.case__zoom-prev:focus-visible,
+.case__zoom-next:focus-visible {
+  color: var(--ink-strong);
+  border-color: var(--ink);
+}
+
+.case__zoom-prev:disabled,
+.case__zoom-next:disabled { color: var(--case-rule); cursor: default; }
+
+.case__zoom-prev:focus-visible,
+.case__zoom-next:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* [hidden] has to beat the display:flex above it. */
+.case__zoom-prev[hidden],
+.case__zoom-next[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .case__zoom-prev,
+  .case__zoom-next { transition: none; }
+}
 
 /* The caption travels with the picture: several of these diagrams carry
    their key in the caption rather than in the artwork, and a zoomed diagram

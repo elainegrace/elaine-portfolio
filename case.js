@@ -175,6 +175,8 @@
   var caption = dialog.querySelector(".case__zoom-caption");
   var closer = dialog.querySelector(".case__zoom-close");
   var ex = dialog.querySelector(".case__zoom-x");
+  var prev = dialog.querySelector(".case__zoom-prev");
+  var next = dialog.querySelector(".case__zoom-next");
 
   /* The number the caption shows is a CSS counter, so it is not in the DOM to
      read. Derived here the same way the counter is: the overview is 01, so the
@@ -202,27 +204,73 @@
     dialog.classList.add("is-zoomed");
   }
 
+  /* The pictures the overlay can step between without closing: the ones in
+     the figure it was opened from. One for most figures, four for the deck. */
+  var group = [];
+  var at = 0;
+
+  function show(i) {
+    at = i;
+    var opener = group[i];
+    var figure = opener.closest(".case__figure");
+    var source = opener.querySelector("img");
+    var cap = figure && figure.querySelector("figcaption");
+    var n = figure ? figureNumber(figure) : "";
+
+    img.src = source.currentSrc || source.src;
+    img.alt = source.alt;
+    /* Trimmed: a few figures are still waiting on their caption, and
+       "Figure 2.2." reads better than "Figure 2.2. " with a space hanging
+       off the end of it.
+       innerText rather than textContent: two captions carry a <br> between
+       the path to the page and the sentence, and textContent drops it,
+       running the two together. The bar keeps the break with pre-line. */
+    caption.textContent =
+      ((n ? "Figure " + n + ". " : "") + (cap ? cap.innerText : "")).trim();
+
+    /* Only a figure holding more than one picture needs stepping through. */
+    var many = group.length > 1;
+    prev.hidden = next.hidden = !many;
+    prev.disabled = i === 0;
+    next.disabled = i === group.length - 1;
+
+    fit();
+  }
+
+  function step(by) {
+    var to = at + by;
+    if (to < 0 || to > group.length - 1) return;
+    show(to);
+    /* Leave the deck on the board the reader ended on, so closing the
+       overlay does not land them back where they started. */
+    var slide = group[to].closest(".case__deck-slide");
+    if (slide) {
+      var deck = slide.parentNode;
+      deck.scrollTo({ left: slide.offsetLeft - deck.firstElementChild.offsetLeft,
+                      behavior: "auto" });
+    }
+  }
+
   openers.forEach(function (opener) {
     opener.addEventListener("click", function () {
       var figure = opener.closest(".case__figure");
-      var source = opener.querySelector("img");
-      var cap = figure && figure.querySelector("figcaption");
-      var n = figure ? figureNumber(figure) : "";
-
-      img.src = source.currentSrc || source.src;
-      img.alt = source.alt;
-      /* Trimmed: a few figures are still waiting on their caption, and
-         "Figure 2.2." reads better than "Figure 2.2. " with a space hanging
-         off the end of it. */
-      /* innerText rather than textContent: two captions carry a <br> between
-         the path to the page and the sentence, and textContent drops it,
-         running the two together. The bar keeps the break with pre-line. */
-      caption.textContent =
-        ((n ? "Figure " + n + ". " : "") + (cap ? cap.innerText : "")).trim();
-
-      fit();
+      group = figure
+        ? [].slice.call(figure.querySelectorAll(".case__zoom-open"))
+        : [opener];
+      show(group.indexOf(opener));
       dialog.showModal();
     });
+  });
+
+  prev.addEventListener("click", function (e) { e.stopPropagation(); step(-1); });
+  next.addEventListener("click", function (e) { e.stopPropagation(); step(1); });
+
+  /* Left and right step between the pictures of a figure that has several.
+     Nothing else in the overlay uses them: panning is by drag. */
+  dialog.addEventListener("keydown", function (e) {
+    if (group.length < 2) return;
+    if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
+    if (e.key === "ArrowRight") { e.preventDefault(); step(1); }
   });
 
   /* Clicking the picture toggles between fit and zoomed; clicking the ground
@@ -299,6 +347,32 @@
     var marks = document.createElement("div");
     marks.className = "case__deck-marks";
 
+    /* An arrow either side of the marks. The marks say how many boards there
+       are and which one is showing; the arrows say the thing a mark cannot,
+       which is that this is something you move. Both sit under the frame:
+       an arrow laid over the artwork would cover part of a board, and these
+       carry their title and legend in the corners. */
+    function arrow(label, path, by) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "case__deck-arrow";
+      b.setAttribute("aria-label", label);
+      b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+        + ' stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"'
+        + ' aria-hidden="true"><path d="' + path + '"/></svg>';
+      b.addEventListener("click", function () {
+        var now = buttons.findIndex(function (x) {
+          return x.getAttribute("aria-current") === "true";
+        });
+        var to = Math.min(slides.length - 1, Math.max(0, now + by));
+        buttons[to].click();
+      });
+      return b;
+    }
+
+    var back = arrow("Previous board", "M15 5 8 12l7 7", -1);
+    var on = arrow("Next board", "M9 5l7 7-7 7", 1);
+
     var buttons = slides.map(function (slide, i) {
       var b = document.createElement("button");
       b.type = "button";
@@ -314,6 +388,8 @@
       return b;
     });
 
+    marks.insertBefore(back, marks.firstChild);
+    marks.appendChild(on);
     deck.parentNode.insertBefore(marks, deck.nextSibling);
 
     function paint() {
@@ -327,6 +403,8 @@
       buttons.forEach(function (b, i) {
         b.setAttribute("aria-current", i === at ? "true" : "false");
       });
+      back.disabled = at === 0;
+      on.disabled = at === slides.length - 1;
     }
 
     var queued = false;
